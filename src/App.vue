@@ -10,6 +10,7 @@ const height = ref(600)
 const canvasRef = ref<HTMLCanvasElement>()
 const ctx = computed(() => canvasRef.value?.getContext('2d'))
 
+
 interface Point {
   x: number,
   y: number
@@ -37,23 +38,23 @@ const setp = (l: Line, depth = 0) => {
   const leftLine: Line = {
     startPoint: endPoint,
     length: l.length + (Math.random() * 5 - 5),
-    angle: l.angle - 0.3 * Math.random()
+    angle: l.angle - 0.4 * Math.random()
   }
 
 
   const rightLine: Line = {
     startPoint: endPoint,
     length: l.length + (Math.random() * 5 - 5),
-    angle: l.angle + 0.3 * Math.random()
+    angle: l.angle + 0.4 * Math.random()
   }
-  if (depth >= 30) return
-  if (Math.random() < 0.4 || depth < 4) {
+  if (depth >= 11) return
+  if (Math.random() < 0.4 || depth < 5) {
     pendingTasks.push(() => {
       setp(leftLine, depth + 1)
     })
 
   }
-  if (Math.random() < 0.4 || depth < 4) {
+  if (Math.random() < 0.4 || depth < 5) {
     pendingTasks.push(() => {
       setp(rightLine, depth + 1)
     })
@@ -84,9 +85,10 @@ const lineTo = (startPoint: Point, endPoint: Point) => {
 }
 
 const init = () => {
+  ctx.value!.strokeStyle = '#000'
   const line: Line = {
     startPoint: { x: width.value / 2, y: height.value },
-    length: 20,
+    length: 50,
     angle: - Math.PI / 2
   }
   setp(line)
