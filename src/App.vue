@@ -5,97 +5,15 @@
 </template>
 
 <script setup lang="ts">
+import { CanvasTree } from './assets/CanvasTree';
+
 const width = ref(600)
 const height = ref(600)
 const canvasRef = ref<HTMLCanvasElement>()
-const ctx = computed(() => canvasRef.value?.getContext('2d'))
 
-
-interface Point {
-  x: number,
-  y: number
-}
-
-interface Line {
-  startPoint: Point,
-  length: number,
-  angle: number
-}
-
-const drawLine = (l: Line) => {
-  lineTo(l.startPoint, getEndPoint(l))
-}
-const getEndPoint = (l: Line) => {
-  return {
-    x: l.startPoint.x + l.length * Math.cos(l.angle),
-    y: l.startPoint.y + l.length * Math.sin(l.angle)
-  }
-}
-const pendingTasks: Function[] = []
-const setp = (l: Line, depth = 0) => {
-  const endPoint = getEndPoint(l)
-  drawLine(l)
-  const leftLine: Line = {
-    startPoint: endPoint,
-    length: l.length + (Math.random() * 5 - 5),
-    angle: l.angle - 0.4 * Math.random()
-  }
-
-
-  const rightLine: Line = {
-    startPoint: endPoint,
-    length: l.length + (Math.random() * 5 - 5),
-    angle: l.angle + 0.4 * Math.random()
-  }
-  if (depth >= 11) return
-  if (Math.random() < 0.4 || depth < 5) {
-    pendingTasks.push(() => {
-      setp(leftLine, depth + 1)
-    })
-
-  }
-  if (Math.random() < 0.4 || depth < 5) {
-    pendingTasks.push(() => {
-      setp(rightLine, depth + 1)
-    })
-  }
-}
-
-const frame = () => {
-  const tasks = [...pendingTasks]
-  pendingTasks.length = 0
-  tasks.forEach(fn => fn())
-}
-
-let renderCount = 0
-const render = () => {
-  requestAnimationFrame(() => {
-    if (renderCount % 3 == 0)
-      frame()
-    render()
-    renderCount++
-  })
-}
-
-const lineTo = (startPoint: Point, endPoint: Point) => {
-  ctx.value?.beginPath()
-  ctx.value?.moveTo(startPoint.x, startPoint.y)
-  ctx.value?.lineTo(endPoint.x, endPoint.y)
-  ctx.value?.stroke()
-}
-
-const init = () => {
-  ctx.value!.strokeStyle = '#000'
-  const line: Line = {
-    startPoint: { x: width.value / 2, y: height.value },
-    length: 50,
-    angle: - Math.PI / 2
-  }
-  setp(line)
-  render()
-}
 onMounted(() => {
-  init()
+  const ct = new CanvasTree(canvasRef.value!)
+  ct.render()
 })
 </script>
 
