@@ -25,12 +25,8 @@ export class CanvasTree {
     private pendingTasks: Function[] = []
     config: treeConfig
     constructor(
-        el: HTMLCanvasElement,
-        startLine: Line = {
-            startPoint: { x: el.width / 2, y: el.height },
-            length: 50,
-            angle: - Math.PI / 2
-        },
+
+
         config: treeConfig = {
             offset: 0.4,
             renderRate: 3,
@@ -39,14 +35,25 @@ export class CanvasTree {
             minDepth: 5,
             chance: 0.4,
         }) {
-        this.el = el
-        this.ctx = el.getContext('2d')
         this.config = config
         this.pendingTasks = []
         this.renderCount = 0
+        this.el = null
+        this.ctx = null
+
+    }
+
+    mount(el: HTMLCanvasElement, startLine: Line = {
+        startPoint: { x: el.width / 2, y: el.height },
+        length: 20,
+        angle: - Math.PI / 2
+    }) {
+        this.el = el
+        this.ctx = el.getContext('2d')
 
         //构建树
         this.setp(startLine)
+        return this
     }
 
     //渲染树
@@ -98,12 +105,12 @@ export class CanvasTree {
             angle: l.angle + this.config.offset! * Math.random()
         }
         if (depth >= this.config.maxDepth!) return
-        if (Math.random() < this.config.chance! || depth < this.config.minDepth!) {
+        if (Math.random() <= this.config.chance! || depth < this.config.minDepth!) {
             this.pendingTasks.push(() => {
                 this.setp(leftLine, depth + 1)
             })
         }
-        if (Math.random() < this.config.chance! || depth < this.config.minDepth!) {
+        if (Math.random() <= this.config.chance! || depth < this.config.minDepth!) {
             this.pendingTasks.push(() => {
                 this.setp(rightLine, depth + 1)
             })
